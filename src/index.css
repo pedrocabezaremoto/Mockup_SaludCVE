@@ -1,0 +1,135 @@
+/* 
+ * SaludConecta VE - Estilos Base
+ * Paleta "Salud Soft" con enfoque en accesibilidad
+ * RF-3: Feedback visual con transiciones suaves
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Estilos Base ===== */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    /* Alto contraste para accesibilidad */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    @apply bg-salud-fondo text-gray-800 min-h-screen;
+    /* Fuentes grandes para personas mayores */
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  
+  /* Foco visible para accesibilidad */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-salud-primario;
+  }
+}
+
+/* ===== Componentes Reutilizables ===== */
+@layer components {
+  /* Botón primario accesible */
+  .btn-primary {
+    @apply px-6 py-4 bg-salud-accion text-white font-semibold rounded-xl
+           hover:bg-salud-accion-hover active:scale-95
+           transition-all duration-smooth
+           min-h-touch flex items-center justify-center
+           text-accesible-base cursor-pointer
+           focus-visible:ring-4 focus-visible:ring-salud-accion/50;
+  }
+  
+  /* Botón secundario */
+  .btn-secondary {
+    @apply px-6 py-4 bg-salud-primario-claro text-salud-primario font-semibold rounded-xl
+           hover:bg-sky-200 active:scale-95
+           transition-all duration-smooth
+           min-h-touch flex items-center justify-center
+           text-accesible-base cursor-pointer;
+  }
+  
+  /* Botón outline */
+  .btn-outline {
+    @apply px-6 py-4 border-2 border-salud-primario text-salud-primario font-semibold rounded-xl
+           hover:bg-salud-primario hover:text-white active:scale-95
+           transition-all duration-smooth
+           min-h-touch flex items-center justify-center
+           text-accesible-base cursor-pointer;
+  }
+  
+  /* Tarjeta contenedora */
+  .card {
+    @apply bg-white rounded-2xl shadow-lg p-6
+           border border-gray-100
+           transition-shadow duration-smooth
+           hover:shadow-xl;
+  }
+  
+  /* Badge de estado */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .badge-success {
+    @apply badge bg-green-100 text-green-800;
+  }
+  
+  .badge-error {
+    @apply badge bg-red-100 text-red-800;
+  }
+  
+  .badge-pending {
+    @apply badge bg-amber-100 text-amber-800;
+  }
+  
+  /* Input accesible */
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border-2 border-gray-200
+           text-accesible-base
+           focus:border-salud-primario focus:ring-2 focus:ring-salud-primario/20
+           transition-all duration-smooth;
+  }
+}
+
+/* ===== Utilidades ===== */
+@layer utilities {
+  /* Animación de carga - RF-3 */
+  .animate-spin-slow {
+    animation: spin 1.5s linear infinite;
+  }
+  
+  /* Fade in para transiciones */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Slide up para modales */
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
