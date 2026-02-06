@@ -354,3 +354,48 @@ export const canAppointmentBeApproved = (userId: string): boolean => {
     // Para otros usuarios, usar disponibilidad del centro (default)
     return true;
 };
+
+/** 
+ * Verifica si el usuario ya tiene una cita pendiente en la misma especialidad
+ * Impide múltiples citas simultáneas en la misma especialidad
+ * @param userId - ID del usuario
+ * @param specialtyId - ID de la especialidad
+ * @param existingAppointments - Array de citas existentes
+ * @returns Objeto con validación: { isValid, message }
+ */
+export const validateSpecialtyAvailability = (
+    userId: string,
+    specialtyId: string,
+    existingAppointments: any[]
+): { isValid: boolean; message?: string } => {
+    // Obtener citas del usuario para esta especialidad
+    const userSpecialtyAppointments = existingAppointments.filter(
+        apt => apt.usuarioId === userId && apt.especialidadId === specialtyId
+    );
+
+    // Verificar si hay citas pendientes (no completadas, no canceladas, y fecha no ha pasado)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const hasPendingAppointment = userSpecialtyAppointments.some(apt => {
+        const appointmentDate = new Date(apt.fecha);
+        appointmentDate.setHours(0, 0, 0, 0);
+
+        // La cita es pendiente si:
+        // 1. Su fecha no ha pasado (es mayor o igual a hoy)
+        // 2. Y su estado no es COMPLETADA ni CANCELADA
+        const isDateNotPassed = appointmentDate >= today;
+        const isNotCompleted = apt.estado !== 'Completada' && apt.estado !== 'Cancelada';
+
+        return isDateNotPassed && isNotCompleted;
+    });
+
+    if (hasPendingAppointment) {
+        return {
+            isValid: false,
+            message: 'Ya tiene una cita pendiente en esta especialidad. Complete o cancele la cita anterior para agendar una nueva en esta especialidad.',
+        };
+    }
+
+    return { isValid: true };
+};

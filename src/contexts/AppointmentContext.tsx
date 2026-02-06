@@ -11,7 +11,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { AppointmentContextType, Appointment, AppointmentStatus } from '../types';
-import { canAppointmentBeApproved } from '../data/mockData';
+import { canAppointmentBeApproved, validateSpecialtyAvailability } from '../data/mockData';
 
 // Crear el contexto
 const AppointmentContext = createContext<AppointmentContextType | undefined>(undefined);
@@ -30,11 +30,9 @@ export const AppointmentProvider: React.FC<AppointmentProviderProps> = ({ childr
 
     /**
      * Agrega una nueva cita al sistema
-     * Simula la lógica de negocio según el usuario y centro seleccionado
-     * 
-     * LÓGICA DE ESCENARIOS:
-     * - Si el centro está disponible (Hospital Militar): Estado = RESERVADA
-     * - Si el centro está colapsado: Estado = RECHAZADA
+     * Validaciones aplicadas:
+     * 1. Usuario no puede tener múltiples citas pendientes en la misma especialidad
+     * 2. Lógica de escenarios (María exitosa, Pablo rechazada)
      * 
      * @param appointmentData - Datos de la cita sin ID ni fecha de creación
      * @returns Promise con la cita creada (incluye resultado de éxito o rechazo)
@@ -47,7 +45,29 @@ export const AppointmentProvider: React.FC<AppointmentProviderProps> = ({ childr
         // RF-3: Simular tiempo de carga de red (1.5 - 2.5 segundos)
         await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
 
-        // Determinar el estado según el usuario y escenario de prueba
+        // VALIDACIÓN 1: Verificar si ya tiene cita pendiente en esta especialidad
+        const specialtyValidation = validateSpecialtyAvailability(
+            appointmentData.usuarioId,
+            appointmentData.especialidadId,
+            appointments
+        );
+
+        if (!specialtyValidation.isValid) {
+            const rejectedAppointment: Appointment = {
+                ...appointmentData,
+                id: `apt-${Date.now()}`,
+                createdAt: new Date(),
+                estado: AppointmentStatus.RECHAZADA,
+                motivoRechazo: specialtyValidation.message,
+            };
+
+            setAppointments(prev => [...prev, rejectedAppointment]);
+            setIsLoading(false);
+
+            return rejectedAppointment;
+        }
+
+        // VALIDACIÓN 2: Determinar el estado según el usuario y escenario de prueba
         const appointmentApproved = canAppointmentBeApproved(appointmentData.usuarioId);
 
         const newAppointment: Appointment = {
