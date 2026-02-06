@@ -19,14 +19,9 @@ import {
     ClipboardIcon, 
     ChatIcon,
     UserIcon,
-    IdCardIcon,
-    MobileIcon,
-    ConfirmedIcon,
-    WarningIcon,
-    DocumentIcon
 } from '../components/icons';
 
-type Page = 'home' | 'search' | 'booking' | 'appointments' | 'contact';
+type Page = 'home' | 'search' | 'booking' | 'appointments' | 'contact' | 'my-info';
 
 interface HomePageProps {
     /** Callback para navegar a otra página */
@@ -64,6 +59,13 @@ const menuOptions = [
         description: 'Comunícate con los centros de salud',
         icon: <ChatIcon size="xl" />,
         color: 'from-amber-400 to-amber-600',
+    },
+    {
+        id: 'my-info' as Page,
+        title: 'Mi Información',
+        description: 'Consulta tus datos personales',
+        icon: <UserIcon size="xl" />,
+        color: 'from-pink-400 to-pink-600',
     },
 ];
 
@@ -120,32 +122,6 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onLogout }) => {
                         </Card>
                     ))}
                 </div>
-
-                {/* Información del usuario demo */}
-                {user && (
-                    <div className="mt-8 p-4 bg-white rounded-xl border border-gray-200 animate-fade-in">
-                        <p className="text-sm text-gray-500 mb-2 flex items-center gap-2">
-                            <DocumentIcon size="sm" /> <strong>Perfil de prueba activo:</strong>
-                        </p>
-                        <div className="flex flex-wrap gap-4 text-sm">
-                            <span className="bg-gray-100 px-3 py-1 rounded-full flex items-center gap-2">
-                                <UserIcon size="sm" /> {user.nombre}
-                            </span>
-                            <span className="bg-gray-100 px-3 py-1 rounded-full flex items-center gap-2">
-                                <IdCardIcon size="sm" /> {user.cedula}
-                            </span>
-                            <span className="bg-gray-100 px-3 py-1 rounded-full flex items-center gap-2">
-                                <MobileIcon size="sm" /> {user.telefono}
-                            </span>
-                            <span className={`px-3 py-1 rounded-full flex items-center gap-2 ${user.tipo === 'maria'
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-amber-100 text-amber-700'
-                                }`}>
-                                {user.tipo === 'maria' ? <><ConfirmedIcon size="sm" /> Caso Éxito</> : <><WarningIcon size="sm" /> Caso Rechazo</>}
-                            </span>
-                        </div>
-                    </div>
-                )}
             </main>
         </div>
     );

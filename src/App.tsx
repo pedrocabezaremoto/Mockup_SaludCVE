@@ -21,9 +21,10 @@ import DoctorProfilePage from './pages/DoctorProfile';
 import BookingWizardPage from './pages/BookingWizard';
 import MyAppointmentsPage from './pages/MyAppointments';
 import ContactPage from './pages/Contact';
+import MyInfoPage from './pages/MyInfo';
 
 /** Tipos de página disponibles en la aplicación */
-type Page = 'login' | 'home' | 'search' | 'doctor-profile' | 'booking' | 'appointments' | 'contact';
+type Page = 'login' | 'home' | 'search' | 'doctor-profile' | 'booking' | 'appointments' | 'contact' | 'my-info';
 
 /**
  * Componente interno que maneja la navegación
@@ -144,6 +145,14 @@ const AppContent: React.FC = () => {
             case 'contact':
                 return (
                     <ContactPage
+                        onNavigate={handleNavigate}
+                        onLogout={handleLogout}
+                    />
+                );
+
+            case 'my-info':
+                return (
+                    <MyInfoPage
                         onNavigate={handleNavigate}
                         onLogout={handleLogout}
                     />
