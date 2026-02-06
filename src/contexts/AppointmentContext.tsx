@@ -11,7 +11,7 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { AppointmentContextType, Appointment, AppointmentStatus } from '../types';
-import { isCenterAvailable } from '../data/mockData';
+import { canAppointmentBeApproved } from '../data/mockData';
 
 // Crear el contexto
 const AppointmentContext = createContext<AppointmentContextType | undefined>(undefined);
@@ -47,17 +47,17 @@ export const AppointmentProvider: React.FC<AppointmentProviderProps> = ({ childr
         // RF-3: Simular tiempo de carga de red (1.5 - 2.5 segundos)
         await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
 
-        // Determinar el estado según disponibilidad del centro
-        const centerAvailable = isCenterAvailable(appointmentData.centroId);
+        // Determinar el estado según el usuario y escenario de prueba
+        const appointmentApproved = canAppointmentBeApproved(appointmentData.usuarioId);
 
         const newAppointment: Appointment = {
             ...appointmentData,
             id: `apt-${Date.now()}`,
             createdAt: new Date(),
-            estado: centerAvailable
+            estado: appointmentApproved
                 ? AppointmentStatus.RESERVADA
                 : AppointmentStatus.RECHAZADA,
-            motivoRechazo: centerAvailable
+            motivoRechazo: appointmentApproved
                 ? undefined
                 : 'Sin disponibilidad - Centro de salud temporalmente sin capacidad de atención',
         };

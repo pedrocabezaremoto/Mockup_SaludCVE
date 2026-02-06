@@ -335,3 +335,22 @@ export const isCenterAvailable = (centerId: string): boolean => {
     const center = getHealthCenterById(centerId);
     return center ? !center.colapsado : false;
 };
+
+/** 
+ * Verifica si una cita puede ser aceptada para un usuario específico
+ * Lógica de escenarios de prueba:
+ * - María (user-maria): SIEMPRE exitosa
+ * - Pablo (user-pablo): SIEMPRE rechazada
+ * @param userId - ID del usuario solicitando la cita
+ * @returns true si la cita debe ser aceptada, false si debe ser rechazada
+ */
+export const canAppointmentBeApproved = (userId: string): boolean => {
+    if (userId === 'user-maria') {
+        return true; // María SIEMPRE obtiene citas exitosas
+    }
+    if (userId === 'user-pablo') {
+        return false; // Pablo SIEMPRE obtiene citas rechazadas
+    }
+    // Para otros usuarios, usar disponibilidad del centro (default)
+    return true;
+};
