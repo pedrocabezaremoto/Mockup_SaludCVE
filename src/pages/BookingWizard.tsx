@@ -39,7 +39,7 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
     doctor,
     onNavigate,
     onLogout,
-    onComplete,
+    onComplete: _onComplete,
 }) => {
     const { user } = useAuth();
     const { addAppointment, isLoading } = useAppointments();
@@ -363,8 +363,8 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                             </Card>
                         ) : result && (
                             <Card className={`py-10 text-center ${result.success
-                                    ? 'bg-gradient-to-b from-green-50 to-white'
-                                    : 'bg-gradient-to-b from-red-50 to-white'
+                                ? 'bg-gradient-to-b from-green-50 to-white'
+                                : 'bg-gradient-to-b from-red-50 to-white'
                                 }`}>
                                 <div className="text-6xl mb-4">
                                     {result.success ? '✅' : '❌'}
@@ -378,8 +378,8 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                                 </p>
 
                                 <span className={`inline-block px-4 py-2 rounded-full font-medium ${result.success
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-red-100 text-red-800'
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-800'
                                     }`}>
                                     Estado: {result.status}
                                 </span>
