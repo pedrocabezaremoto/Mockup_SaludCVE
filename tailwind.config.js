@@ -20,7 +20,9 @@ export default {
                 }
             },
             fontFamily: {
-                'sans': ['Inter', 'system-ui', 'sans-serif'],
+                'sans': ['Figtree', 'system-ui', 'sans-serif'],
+                'serif': ['Space Grotesk', 'system-ui', 'sans-serif'],
+                'display': ['Space Grotesk', 'system-ui', 'sans-serif'],
             },
             // Tamaños accesibles para personas mayores
             fontSize: {

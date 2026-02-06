@@ -13,6 +13,22 @@ import { Navbar, BackButton } from '../components/layout';
 import { Card, Button } from '../components/ui';
 import { healthCenters, specialties, getDoctorsByCenterAndSpecialty } from '../data/mockData';
 import { HealthCenter, Specialty, Doctor } from '../types';
+import { 
+    SearchIcon, 
+    WarningIcon, 
+    HospitalIcon, 
+    LocationIcon, 
+    PhoneIcon,
+    DoctorIcon,
+    MorningIcon,
+    AfternoonIcon,
+    SadIcon,
+    PediatricsIcon,
+    GynecologyIcon,
+    InternalMedicineIcon,
+    CardiologyIcon,
+    SurgeryIcon
+} from '../components/icons';
 
 type Page = 'home' | 'search' | 'booking' | 'appointments' | 'contact';
 
@@ -23,6 +39,15 @@ interface SearchPageProps {
 }
 
 type SearchStep = 'center' | 'specialty' | 'results';
+
+// Mapeo de especialidades a iconos SVG
+const specialtyIcons: { [key: string]: React.ReactElement } = {
+    'pediatria': <PediatricsIcon size="xl" className="text-sky-500" />,
+    'ginecologia': <GynecologyIcon size="xl" className="text-pink-500" />,
+    'medicina-interna': <InternalMedicineIcon size="xl" className="text-blue-500" />,
+    'cardiologia': <CardiologyIcon size="xl" className="text-red-500" />,
+    'cirugia-general': <SurgeryIcon size="xl" className="text-purple-500" />
+};
 
 /**
  * Pantalla de búsqueda de especialistas
@@ -78,8 +103,8 @@ const SearchPage: React.FC<SearchPageProps> = ({
 
                 {/* Encabezado */}
                 <div className="mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-                        🔍 Buscar Especialista
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
+                        <SearchIcon size="lg" className="text-salud-accion" /> Buscar Especialista
                     </h1>
                     <p className="text-gray-600 mt-2">
                         {step === 'center' && 'Paso 1: Seleccione un centro de salud'}
@@ -126,20 +151,25 @@ const SearchPage: React.FC<SearchPageProps> = ({
                                 className="cursor-pointer"
                             >
                                 <div className="flex items-start gap-4">
-                                    <div className="text-3xl">{center.colapsado ? '⚠️' : '🏥'}</div>
+                                    <div className="text-3xl">
+                                        {center.colapsado ? 
+                                            <WarningIcon size="lg" className="text-amber-500" /> : 
+                                            <HospitalIcon size="lg" className="text-salud-primario" />
+                                        }
+                                    </div>
                                     <div className="flex-1">
                                         <h3 className="font-bold text-lg text-gray-800">
                                             {center.nombre}
                                         </h3>
-                                        <p className="text-gray-600 text-sm mt-1">
-                                            📍 {center.direccion}
+                                        <p className="text-gray-600 text-sm mt-1 flex items-center gap-2">
+                                            <LocationIcon size="sm" /> {center.direccion}
                                         </p>
-                                        <p className="text-gray-500 text-sm mt-1">
-                                            📞 {center.telefono}
+                                        <p className="text-gray-500 text-sm mt-1 flex items-center gap-2">
+                                            <PhoneIcon size="sm" /> {center.telefono}
                                         </p>
                                         {center.colapsado && (
-                                            <span className="inline-block mt-2 text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded">
-                                                ⚠️ Alta demanda
+                                            <span className="inline-flex items-center gap-1 mt-2 text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded">
+                                                <WarningIcon size="sm" /> Alta demanda
                                             </span>
                                         )}
                                     </div>
@@ -166,7 +196,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
                                     onClick={() => handleSpecialtySelect(specialty)}
                                     className="cursor-pointer text-center"
                                 >
-                                    <div className="text-4xl mb-2">{specialty.icono}</div>
+                                    <div className="mb-2">{specialtyIcons[specialty.id]}</div>
                                     <h3 className="font-semibold text-gray-800">{specialty.nombre}</h3>
                                 </Card>
                             ))}
@@ -193,14 +223,16 @@ const SearchPage: React.FC<SearchPageProps> = ({
                                                 <div className="flex items-center gap-3 mb-3">
                                                     <div className="w-12 h-12 rounded-full bg-salud-primario-claro 
                                           flex items-center justify-center text-xl">
-                                                        {doctor.nombre.includes('Dra.') ? '👩‍⚕️' : '👨‍⚕️'}
+                                                        <DoctorIcon className="text-salud-primario" />
                                                     </div>
                                                     <div>
                                                         <h3 className="font-bold text-lg text-gray-800">
                                                             {doctor.nombre}
                                                         </h3>
-                                                        <p className="text-sm text-salud-primario">
-                                                            {selectedSpecialty?.icono} {selectedSpecialty?.nombre}
+                                                        <p className="text-sm text-salud-primario flex items-center gap-1">
+                                                            {selectedSpecialty && specialtyIcons[selectedSpecialty.id] && (
+                                                                React.cloneElement(specialtyIcons[selectedSpecialty.id], { size: 'sm' as any })
+                                                            )} {selectedSpecialty?.nombre}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -208,8 +240,12 @@ const SearchPage: React.FC<SearchPageProps> = ({
                                                     {doctor.credenciales}
                                                 </p>
                                                 <div className="text-sm text-gray-500">
-                                                    <p>🌅 Mañana: {doctor.horario.manana}</p>
-                                                    <p>🌆 Tarde: {doctor.horario.tarde}</p>
+                                                    <p className="flex items-center gap-2">
+                                                        <MorningIcon size="sm" /> Mañana: {doctor.horario.manana}
+                                                    </p>
+                                                    <p className="flex items-center gap-2">
+                                                        <AfternoonIcon size="sm" /> Tarde: {doctor.horario.tarde}
+                                                    </p>
                                                 </div>
                                             </div>
 
@@ -228,7 +264,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
                             </div>
                         ) : (
                             <Card className="text-center py-12">
-                                <div className="text-5xl mb-4">😔</div>
+                                <SadIcon size="xl" className="mx-auto mb-4 text-gray-400" />
                                 <h3 className="text-xl font-bold text-gray-700 mb-2">
                                     No se encontraron especialistas
                                 </h3>

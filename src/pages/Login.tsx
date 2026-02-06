@@ -9,6 +9,7 @@
 import React from 'react';
 import Logo from '../components/Logo';
 import { Button } from '../components/ui';
+import { AcademicIcon, UserIcon, DocumentIcon } from '../components/icons';
 
 interface LoginPageProps {
     /** Callback al simular login de María */
@@ -51,8 +52,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginMaria, onLoginPablo }) => 
                     {/* Tarjeta de acceso demo */}
                     <div className="bg-white rounded-3xl shadow-xl p-6 sm:p-8 animate-fade-in">
                         <div className="text-center mb-8">
-                            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">
-                                🎓 Modo Demostración
+                            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-2 flex items-center justify-center gap-2">
+                                <AcademicIcon size="lg" className="text-salud-accion" /> Modo Demostración
                             </h2>
                             <p className="text-gray-600">
                                 Seleccione un perfil de prueba para explorar el sistema
@@ -67,7 +68,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginMaria, onLoginPablo }) => 
                                 size="lg"
                                 fullWidth
                                 onClick={onLoginMaria}
-                                leftIcon={<span className="text-2xl">👩‍⚕️</span>}
+                                leftIcon={<UserIcon size="lg" />}
                             >
                                 <div className="text-left flex-1 ml-2">
                                     <span className="block font-bold">Simular Paciente: María</span>
@@ -83,7 +84,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginMaria, onLoginPablo }) => 
                                 size="lg"
                                 fullWidth
                                 onClick={onLoginPablo}
-                                leftIcon={<span className="text-2xl">👨</span>}
+                                leftIcon={<UserIcon size="lg" />}
                             >
                                 <div className="text-left flex-1 ml-2">
                                     <span className="block font-bold">Simular Paciente: Pablo</span>
@@ -96,17 +97,20 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginMaria, onLoginPablo }) => 
 
                         {/* Nota informativa */}
                         <div className="mt-8 p-4 bg-amber-50 rounded-xl border border-amber-200">
-                            <p className="text-sm text-amber-800">
-                                <strong>📋 Nota académica:</strong> Este mockup simula un sistema
-                                de citas médicas. Los datos y funcionalidades son demostrativos
-                                para la presentación ante la UNERG.
+                            <p className="text-sm text-amber-800 flex items-start gap-2">
+                                <DocumentIcon size="sm" className="flex-shrink-0 mt-0.5" />
+                                <span>
+                                    <strong>Nota académica:</strong> Este mockup simula un sistema
+                                    de citas médicas. Los datos y funcionalidades son demostrativos
+                                    para la presentación ante la UNERG.
+                                </span>
                             </p>
                         </div>
                     </div>
 
                     {/* Footer */}
                     <p className="text-center text-sm text-gray-400 mt-6">
-                        Proyecto Universitario • UNERG 2024
+                        Proyecto Universitario • UNERG 2026-1
                     </p>
                 </div>
             </div>
