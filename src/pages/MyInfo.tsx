@@ -9,13 +9,13 @@ import React from 'react';
 import { Navbar, BackButton } from '../components/layout';
 import { Card, Button } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
-import { 
+import {
     UserIcon,
     IdCardIcon,
     MobileIcon,
     ConfirmedIcon,
     WarningIcon,
-    SearchIcon
+    SearchIcon as _SearchIcon
 } from '../components/icons';
 
 type Page = 'home' | 'search' | 'booking' | 'appointments' | 'contact' | 'my-info';
@@ -73,13 +73,12 @@ const MyInfoPage: React.FC<MyInfoPageProps> = ({ onNavigate, onLogout }) => {
                         <h2 className="text-2xl font-bold text-gray-800">
                             {user.nombre}
                         </h2>
-                        <p className={`font-medium mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full ${
-                            user.tipo === 'maria'
+                        <p className={`font-medium mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full ${user.tipo === 'maria'
                                 ? 'bg-green-100 text-green-700'
                                 : 'bg-amber-100 text-amber-700'
-                        }`}>
-                            {user.tipo === 'maria' ? 
-                                <><ConfirmedIcon size="sm" /> Caso Éxito</> : 
+                            }`}>
+                            {user.tipo === 'maria' ?
+                                <><ConfirmedIcon size="sm" /> Caso Éxito</> :
                                 <><WarningIcon size="sm" /> Caso Rechazo</>
                             }
                         </p>
@@ -136,7 +135,7 @@ const MyInfoPage: React.FC<MyInfoPageProps> = ({ onNavigate, onLogout }) => {
                                     <strong>Tipo de Perfil:</strong> {user.tipo === 'maria' ? 'Caso Éxito' : 'Caso Rechazo'}
                                 </p>
                                 <p className="text-xs text-gray-500 leading-relaxed">
-                                    {user.tipo === 'maria' 
+                                    {user.tipo === 'maria'
                                         ? 'Este es un perfil de demostración que simula un flujo exitoso de agendamiento de citas.'
                                         : 'Este es un perfil de demostración que simula un flujo con rechazo de citas.'
                                     }
