@@ -11,6 +11,15 @@ import React from 'react';
 import { Navbar, BackButton } from '../components/layout';
 import { Card, Button } from '../components/ui';
 import { healthCenters } from '../data/mockData';
+import { 
+    ChatIcon, 
+    InfoIcon, 
+    HospitalIcon, 
+    LocationIcon, 
+    PhoneIcon, 
+    WarningIcon,
+    DocumentIcon
+} from '../components/icons';
 
 type Page = 'home' | 'search' | 'booking' | 'appointments' | 'contact';
 
@@ -45,8 +54,8 @@ const ContactPage: React.FC<ContactPageProps> = ({
                 <BackButton onClick={() => onNavigate('home')} className="mb-4" />
 
                 <div className="mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-                        💬 Contacto
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
+                        <ChatIcon size="lg" className="text-salud-accion" /> Contacto
                     </h1>
                     <p className="text-gray-600 mt-2">
                         Comuníquese directamente con los centros de salud vía WhatsApp
@@ -56,7 +65,7 @@ const ContactPage: React.FC<ContactPageProps> = ({
                 {/* Nota informativa */}
                 <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 animate-fade-in">
                     <div className="flex items-start gap-3">
-                        <span className="text-2xl">💡</span>
+                        <InfoIcon size="lg" className="text-green-600 flex-shrink-0" />
                         <div>
                             <p className="font-semibold text-green-800">
                                 Comunicación directa
@@ -81,20 +90,20 @@ const ContactPage: React.FC<ContactPageProps> = ({
                                 {/* Info del centro */}
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <span className="text-2xl">🏥</span>
+                                        <HospitalIcon size="lg" className="text-salud-primario" />
                                         <h3 className="font-bold text-lg text-gray-800">
                                             {center.nombre}
                                         </h3>
                                     </div>
-                                    <p className="text-sm text-gray-600 mb-1">
-                                        📍 {center.direccion}
+                                    <p className="text-sm text-gray-600 mb-1 flex items-center gap-2">
+                                        <LocationIcon size="sm" /> {center.direccion}
                                     </p>
-                                    <p className="text-sm text-gray-500">
-                                        📞 {center.telefono}
+                                    <p className="text-sm text-gray-500 flex items-center gap-2">
+                                        <PhoneIcon size="sm" /> {center.telefono}
                                     </p>
                                     {center.colapsado && (
-                                        <span className="inline-block mt-2 text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded">
-                                            ⚠️ Alta demanda
+                                        <span className="inline-flex items-center gap-1 mt-2 text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded">
+                                            <WarningIcon size="sm" /> Alta demanda
                                         </span>
                                     )}
                                 </div>
@@ -121,10 +130,13 @@ const ContactPage: React.FC<ContactPageProps> = ({
 
                 {/* Nota de demo */}
                 <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                    <p className="text-sm text-blue-800">
-                        <strong>📋 Nota de prueba:</strong> Los botones de WhatsApp ahora
-                        redirijen a tu WhatsApp Business para testing. En producción, se
-                        conectarían a los números de teléfono específicos de cada centro.
+                    <p className="text-sm text-blue-800 flex items-start gap-2">
+                        <DocumentIcon size="sm" className="flex-shrink-0 mt-0.5" />
+                        <span>
+                            <strong>Nota de prueba:</strong> Los botones de WhatsApp ahora
+                            redirijen a tu WhatsApp Business para testing. En producción, se
+                            conectarían a los números de teléfono específicos de cada centro.
+                        </span>
                     </p>
                 </div>
             </main>

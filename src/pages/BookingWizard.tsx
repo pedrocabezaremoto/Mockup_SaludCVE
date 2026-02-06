@@ -19,6 +19,21 @@ import { useAuth } from '../contexts/AuthContext';
 import { useAppointments } from '../contexts/AppointmentContext';
 import { Doctor, Shift, AppointmentStatus } from '../types';
 import { getSpecialtyById, getHealthCenterById } from '../data/mockData';
+import { 
+    CalendarIcon,
+    DoctorIcon,
+    ConfirmedIcon,
+    MorningIcon,
+    AfternoonIcon,
+    ClipboardIcon,
+    SearchIcon,
+    RejectedIcon,
+    PediatricsIcon,
+    GynecologyIcon,
+    InternalMedicineIcon,
+    CardiologyIcon,
+    SurgeryIcon
+} from '../components/icons';
 
 type Page = 'home' | 'search' | 'booking' | 'appointments' | 'contact';
 
@@ -30,6 +45,15 @@ interface BookingWizardPageProps {
 }
 
 type WizardStep = 'date' | 'shift' | 'confirm' | 'result';
+
+// Mapeo de especialidades a iconos SVG
+const specialtyIcons: { [key: string]: React.ReactElement } = {
+    'pediatria': <PediatricsIcon size="sm" className="text-sky-500" />,
+    'ginecologia': <GynecologyIcon size="sm" className="text-pink-500" />,
+    'medicina-interna': <InternalMedicineIcon size="sm" className="text-blue-500" />,
+    'cardiologia': <CardiologyIcon size="sm" className="text-red-500" />,
+    'cirugia-general': <SurgeryIcon size="sm" className="text-purple-500" />
+};
 
 /**
  * Wizard de agendamiento de citas
@@ -155,14 +179,14 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                 <Navbar onHomeClick={() => onNavigate('home')} onLogout={onLogout} />
                 <main className="max-w-2xl mx-auto px-4 py-6">
                     <Card className="text-center py-12">
-                        <div className="text-5xl mb-4">❓</div>
+                        <SearchIcon size="xl" className="mx-auto mb-4 text-gray-300" />
                         <h3 className="text-xl font-bold text-gray-700 mb-2">
                             No hay doctor seleccionado
                         </h3>
                         <p className="text-gray-500 mb-6">
                             Primero debe buscar y seleccionar un especialista
                         </p>
-                        <Button variant="primary" onClick={() => onNavigate('search')}>
+                        <Button variant="primary" onClick={() => onNavigate('search')} leftIcon={<SearchIcon />}>
                             Buscar Especialista
                         </Button>
                     </Card>
@@ -182,8 +206,8 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
 
                 {/* Header */}
                 <div className="mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-                        📅 Agendar Cita
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
+                        <CalendarIcon size="lg" className="text-salud-accion" /> Agendar Cita
                     </h1>
                     <p className="text-gray-600 mt-2">
                         Con: <strong>{doctor.nombre}</strong>
@@ -193,13 +217,11 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                 {/* Info del doctor seleccionado */}
                 <Card className="mb-6 !p-4 bg-salud-primario-claro border-salud-primario">
                     <div className="flex items-center gap-3">
-                        <div className="text-2xl">
-                            {doctor.nombre.includes('Dra.') ? '👩‍⚕️' : '👨‍⚕️'}
-                        </div>
+                        <DoctorIcon size="lg" className="text-salud-primario" />
                         <div>
                             <p className="font-semibold text-salud-primario">{doctor.nombre}</p>
-                            <p className="text-sm text-gray-600">
-                                {specialty?.icono} {specialty?.nombre} • {center?.nombre}
+                            <p className="text-sm text-gray-600 flex items-center gap-1">
+                                {specialty && specialtyIcons[specialty.id]} {specialty?.nombre} • {center?.nombre}
                             </p>
                         </div>
                     </div>
@@ -217,7 +239,7 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                                 size="lg"
                                 fullWidth
                                 onClick={() => handleDateSelect('today')}
-                                leftIcon={<span className="text-2xl">📆</span>}
+                                leftIcon={<CalendarIcon size="lg" />}
                             >
                                 <span className="flex-1 text-left ml-2">
                                     <span className="block font-bold">Hoy</span>
@@ -232,7 +254,7 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                                 size="lg"
                                 fullWidth
                                 onClick={() => handleDateSelect('tomorrow')}
-                                leftIcon={<span className="text-2xl">🗓️</span>}
+                                leftIcon={<CalendarIcon size="lg" />}
                             >
                                 <span className="flex-1 text-left ml-2">
                                     <span className="block font-bold">Mañana</span>
@@ -247,7 +269,7 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                                 size="lg"
                                 fullWidth
                                 onClick={() => handleDateSelect('custom')}
-                                leftIcon={<span className="text-2xl">📅</span>}
+                                leftIcon={<CalendarIcon size="lg" />}
                             >
                                 <span className="flex-1 text-left ml-2">
                                     <span className="block font-bold">Elegir otro día</span>
@@ -264,8 +286,8 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                 {step === 'shift' && (
                     <div className="animate-fade-in">
                         <div className="bg-green-50 rounded-xl p-3 mb-4">
-                            <p className="text-sm text-green-700">
-                                ✓ <strong>Fecha:</strong> {selectedDateLabel}
+                            <p className="text-sm text-green-700 flex items-center gap-2">
+                                <ConfirmedIcon size="sm" /> <strong>Fecha:</strong> {selectedDateLabel}
                             </p>
                         </div>
 
@@ -278,7 +300,7 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                                 onClick={() => handleShiftSelect(Shift.MANANA)}
                                 className="text-center cursor-pointer"
                             >
-                                <div className="text-5xl mb-3">🌅</div>
+                                <MorningIcon size="xl" className="mx-auto mb-3 text-amber-500" />
                                 <h3 className="text-xl font-bold text-gray-800">Mañana</h3>
                                 <p className="text-sm text-gray-500 mt-1">
                                     {doctor.horario.manana}
@@ -290,7 +312,7 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                                 onClick={() => handleShiftSelect(Shift.TARDE)}
                                 className="text-center cursor-pointer"
                             >
-                                <div className="text-5xl mb-3">🌆</div>
+                                <AfternoonIcon size="xl" className="mx-auto mb-3 text-violet-500" />
                                 <h3 className="text-xl font-bold text-gray-800">Tarde</h3>
                                 <p className="text-sm text-gray-500 mt-1">
                                     {doctor.horario.tarde}
@@ -308,8 +330,8 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                         </h2>
 
                         <Card className="mb-6">
-                            <h3 className="font-semibold text-gray-700 mb-4">
-                                📋 Resumen de la cita
+                            <h3 className="font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                                <ClipboardIcon size="md" className="text-salud-primario" /> Resumen de la cita
                             </h3>
                             <div className="space-y-3">
                                 <div className="flex justify-between py-2 border-b border-gray-100">
@@ -318,8 +340,8 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                                 </div>
                                 <div className="flex justify-between py-2 border-b border-gray-100">
                                     <span className="text-gray-500">Especialidad</span>
-                                    <span className="font-medium text-gray-800">
-                                        {specialty?.icono} {specialty?.nombre}
+                                    <span className="font-medium text-gray-800 flex items-center gap-1">
+                                        {specialty && specialtyIcons[specialty.id]} {specialty?.nombre}
                                     </span>
                                 </div>
                                 <div className="flex justify-between py-2 border-b border-gray-100">
@@ -332,8 +354,11 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                                 </div>
                                 <div className="flex justify-between py-2">
                                     <span className="text-gray-500">Turno</span>
-                                    <span className="font-medium text-gray-800">
-                                        {selectedShift === Shift.MANANA ? '🌅 Mañana' : '🌆 Tarde'}
+                                    <span className="font-medium text-gray-800 flex items-center gap-1">
+                                        {selectedShift === Shift.MANANA ? 
+                                            <><MorningIcon size="sm" className="text-amber-500" /> Mañana</> : 
+                                            <><AfternoonIcon size="sm" className="text-violet-500" /> Tarde</>
+                                        }
                                     </span>
                                 </div>
                             </div>
@@ -345,8 +370,9 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                             fullWidth
                             onClick={handleConfirm}
                             isLoading={isLoading}
+                            leftIcon={<ConfirmedIcon />}
                         >
-                            ✅ Confirmar y Agendar Cita
+                            Confirmar y Agendar Cita
                         </Button>
                     </div>
                 )}
@@ -366,8 +392,11 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
                                     ? 'bg-gradient-to-b from-green-50 to-white'
                                     : 'bg-gradient-to-b from-red-50 to-white'
                                 }`}>
-                                <div className="text-6xl mb-4">
-                                    {result.success ? '✅' : '❌'}
+                                <div className="mb-4 flex justify-center">
+                                    {result.success ? 
+                                        <ConfirmedIcon className="text-green-500 w-16 h-16" /> : 
+                                        <RejectedIcon className="text-red-500 w-16 h-16" />
+                                    }
                                 </div>
                                 <h2 className={`text-2xl font-bold mb-2 ${result.success ? 'text-green-700' : 'text-red-700'
                                     }`}>

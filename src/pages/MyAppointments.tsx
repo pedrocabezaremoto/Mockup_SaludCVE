@@ -12,8 +12,37 @@ import { useAuth } from '../contexts/AuthContext';
 import { useAppointments } from '../contexts/AppointmentContext';
 import { AppointmentStatus } from '../types';
 import { getDoctorById, getSpecialtyById, getHealthCenterById } from '../data/mockData';
+import { 
+    ClipboardIcon,
+    ConfirmedIcon,
+    PendingIcon,
+    RejectedIcon,
+    CompletedIcon,
+    CancelledIcon,
+    DoctorIcon,
+    HospitalIcon,
+    CalendarIcon,
+    MorningIcon,
+    AfternoonIcon,
+    WarningIcon,
+    SearchIcon,
+    PediatricsIcon,
+    GynecologyIcon,
+    InternalMedicineIcon,
+    CardiologyIcon,
+    SurgeryIcon
+} from '../components/icons';
 
 type Page = 'home' | 'search' | 'booking' | 'appointments' | 'contact';
+
+// Mapeo de especialidades a iconos SVG
+const specialtyIcons: { [key: string]: React.ReactElement } = {
+    'pediatria': <PediatricsIcon size="sm" className="text-sky-500" />,
+    'ginecologia': <GynecologyIcon size="sm" className="text-pink-500" />,
+    'medicina-interna': <InternalMedicineIcon size="sm" className="text-blue-500" />,
+    'cardiologia': <CardiologyIcon size="sm" className="text-red-500" />,
+    'cirugia-general': <SurgeryIcon size="sm" className="text-purple-500" />
+};
 
 interface MyAppointmentsPageProps {
     onNavigate: (page: Page) => void;
@@ -23,27 +52,27 @@ interface MyAppointmentsPageProps {
 const statusConfig = {
     [AppointmentStatus.RESERVADA]: {
         color: 'bg-green-100 text-green-800 border-green-200',
-        icon: '✅',
+        icon: <ConfirmedIcon size="sm" />,
         description: 'Su cita ha sido confirmada',
     },
     [AppointmentStatus.PENDIENTE]: {
         color: 'bg-amber-100 text-amber-800 border-amber-200',
-        icon: '⏳',
+        icon: <PendingIcon size="sm" />,
         description: 'En espera de confirmación',
     },
     [AppointmentStatus.RECHAZADA]: {
         color: 'bg-red-100 text-red-800 border-red-200',
-        icon: '❌',
+        icon: <RejectedIcon size="sm" />,
         description: 'No fue posible agendar esta cita',
     },
     [AppointmentStatus.COMPLETADA]: {
         color: 'bg-blue-100 text-blue-800 border-blue-200',
-        icon: '✔️',
+        icon: <CompletedIcon size="sm" />,
         description: 'Cita atendida',
     },
     [AppointmentStatus.CANCELADA]: {
         color: 'bg-gray-100 text-gray-800 border-gray-200',
-        icon: '🚫',
+        icon: <CancelledIcon size="sm" />,
         description: 'Cita cancelada',
     },
 };
@@ -69,8 +98,8 @@ const MyAppointmentsPage: React.FC<MyAppointmentsPageProps> = ({
                 <BackButton onClick={() => onNavigate('home')} className="mb-4" />
 
                 <div className="mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
-                        📋 Mis Citas
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
+                        <ClipboardIcon size="lg" className="text-salud-accion" /> Mis Citas
                     </h1>
                     <p className="text-gray-600 mt-2">
                         Historial y estado de sus citas médicas
@@ -90,7 +119,7 @@ const MyAppointmentsPage: React.FC<MyAppointmentsPageProps> = ({
                                     {/* Badge de estado */}
                                     <div className={`px-4 py-2 border-b ${config.color}`}>
                                         <div className="flex items-center justify-between">
-                                            <span className="font-semibold">
+                                            <span className="font-semibold flex items-center gap-2">
                                                 {config.icon} Estado: {appointment.estado}
                                             </span>
                                             <span className="text-xs opacity-70">
@@ -104,22 +133,27 @@ const MyAppointmentsPage: React.FC<MyAppointmentsPageProps> = ({
                                     <div className="p-4">
                                         <div className="flex items-start gap-4">
                                             <div className="text-3xl">
-                                                {doctor?.nombre.includes('Dra.') ? '👩‍⚕️' : '👨‍⚕️'}
+                                                <DoctorIcon size="lg" className="text-salud-primario" />
                                             </div>
                                             <div className="flex-1">
                                                 <h3 className="font-bold text-gray-800">
                                                     {doctor?.nombre}
                                                 </h3>
-                                                <p className="text-sm text-salud-primario">
-                                                    {specialty?.icono} {specialty?.nombre}
+                                                <p className="text-sm text-salud-primario flex items-center gap-1">
+                                                    {specialty && specialtyIcons[specialty.id]} {specialty?.nombre}
                                                 </p>
-                                                <p className="text-sm text-gray-500 mt-1">
-                                                    🏥 {center?.nombre}
+                                                <p className="text-sm text-gray-500 mt-1 flex items-center gap-2">
+                                                    <HospitalIcon size="sm" /> {center?.nombre}
                                                 </p>
                                                 <div className="flex gap-4 mt-2 text-sm text-gray-600">
-                                                    <span>📅 {appointment.fecha}</span>
-                                                    <span>
-                                                        {appointment.turno === 'Mañana' ? '🌅' : '🌆'} {appointment.turno}
+                                                    <span className="flex items-center gap-1">
+                                                        <CalendarIcon size="sm" /> {appointment.fecha}
+                                                    </span>
+                                                    <span className="flex items-center gap-1">
+                                                        {appointment.turno === 'Mañana' ? 
+                                                            <MorningIcon size="sm" /> : 
+                                                            <AfternoonIcon size="sm" />
+                                                        } {appointment.turno}
                                                     </span>
                                                 </div>
                                             </div>
@@ -128,8 +162,9 @@ const MyAppointmentsPage: React.FC<MyAppointmentsPageProps> = ({
                                         {/* Motivo de rechazo si aplica */}
                                         {appointment.motivoRechazo && (
                                             <div className="mt-4 p-3 bg-red-50 rounded-lg border border-red-100">
-                                                <p className="text-sm text-red-700">
-                                                    <strong>⚠️ Motivo:</strong> {appointment.motivoRechazo}
+                                                <p className="text-sm text-red-700 flex items-start gap-2">
+                                                    <WarningIcon size="sm" className="flex-shrink-0 mt-0.5" />
+                                                    <span><strong>Motivo:</strong> {appointment.motivoRechazo}</span>
                                                 </p>
                                             </div>
                                         )}
@@ -140,7 +175,7 @@ const MyAppointmentsPage: React.FC<MyAppointmentsPageProps> = ({
                     </div>
                 ) : (
                     <Card className="text-center py-16 animate-fade-in">
-                        <div className="text-6xl mb-4">📭</div>
+                        <ClipboardIcon size="xl" className="mx-auto mb-4 text-gray-300" />
                         <h3 className="text-xl font-bold text-gray-700 mb-2">
                             No tiene citas registradas
                         </h3>
@@ -150,7 +185,7 @@ const MyAppointmentsPage: React.FC<MyAppointmentsPageProps> = ({
                         <Button
                             variant="primary"
                             onClick={() => onNavigate('search')}
-                            leftIcon={<span>🔍</span>}
+                            leftIcon={<SearchIcon />}
                         >
                             Buscar Especialista
                         </Button>
