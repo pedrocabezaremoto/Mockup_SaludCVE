@@ -64,14 +64,19 @@ export const AppointmentProvider: React.FC<AppointmentProviderProps> = ({ childr
         // RF-3: Simular tiempo de carga de red (1.5 - 2.5 segundos)
         await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
 
+        let createdFromApi: Appointment | null = null;
+
         try {
             const created = await createAppointmentApi(appointmentData);
-            const normalized = normalizeAppointment(created);
-            setAppointments(prev => [...prev, normalized]);
-            setIsLoading(false);
-            return normalized;
+            createdFromApi = normalizeAppointment(created);
         } catch {
             // Fallback a lógica local si el backend no está disponible
+        }
+
+        if (createdFromApi) {
+            setAppointments(prev => [...prev, createdFromApi]);
+            setIsLoading(false);
+            return createdFromApi;
         }
 
         // VALIDACIÓN 1: Verificar si ya tiene cita pendiente en esta especialidad

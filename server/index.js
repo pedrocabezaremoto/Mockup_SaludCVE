@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 import {
     initDb,
     mapAppointmentRow,
@@ -12,11 +13,20 @@ import {
 const app = express();
 const db = initDb();
 
+const defaultOrigins = ['http://localhost:5173', 'http://localhost:4173'];
 const allowedOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
-    : null;
+    : defaultOrigins;
 
-app.use(cors({ origin: allowedOrigins?.length ? allowedOrigins : true }));
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 300,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+});
+
+app.use(cors({ origin: allowedOrigins }));
+app.use('/api', apiLimiter);
 app.use(express.json());
 
 const validateSpecialtyAvailability = (appointments) => {
