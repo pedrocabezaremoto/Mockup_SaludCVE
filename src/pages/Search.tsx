@@ -11,7 +11,7 @@
 import React, { useState } from 'react';
 import { Navbar, BackButton } from '../components/layout';
 import { Card, Button } from '../components/ui';
-import { healthCenters, specialties, getDoctorsByCenterAndSpecialty } from '../data/mockData';
+import { useCatalog } from '../contexts/CatalogContext';
 import { HealthCenter, Specialty, Doctor } from '../types';
 import { 
     SearchIcon, 
@@ -58,6 +58,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
     onLogout,
     onSelectDoctor
 }) => {
+    const { healthCenters, specialties, getDoctorsByCenterAndSpecialty } = useCatalog();
     const [step, setStep] = useState<SearchStep>('center');
     const [selectedCenter, setSelectedCenter] = useState<HealthCenter | null>(null);
     const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty | null>(null);

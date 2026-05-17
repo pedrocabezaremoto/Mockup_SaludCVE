@@ -18,7 +18,7 @@ import { Card, Button, Spinner } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 import { useAppointments } from '../contexts/AppointmentContext';
 import { Doctor, Shift, AppointmentStatus } from '../types';
-import { getSpecialtyById, getHealthCenterById } from '../data/mockData';
+import { useCatalog } from '../contexts/CatalogContext';
 import { 
     CalendarIcon,
     DoctorIcon,
@@ -67,6 +67,7 @@ const BookingWizardPage: React.FC<BookingWizardPageProps> = ({
 }) => {
     const { user } = useAuth();
     const { addAppointment, isLoading } = useAppointments();
+    const { getSpecialtyById, getHealthCenterById } = useCatalog();
 
     const [step, setStep] = useState<WizardStep>('date');
     const [selectedDate, setSelectedDate] = useState<string>('');

@@ -10,8 +10,8 @@ import { Navbar, BackButton } from '../components/layout';
 import { Card, Button } from '../components/ui';
 import { useAuth } from '../contexts/AuthContext';
 import { useAppointments } from '../contexts/AppointmentContext';
+import { useCatalog } from '../contexts/CatalogContext';
 import { AppointmentStatus } from '../types';
-import { getDoctorById, getSpecialtyById, getHealthCenterById } from '../data/mockData';
 import { 
     ClipboardIcon,
     ConfirmedIcon,
@@ -87,6 +87,7 @@ const MyAppointmentsPage: React.FC<MyAppointmentsPageProps> = ({
 }) => {
     const { user } = useAuth();
     const { getAppointmentsByUser } = useAppointments();
+    const { getDoctorById, getSpecialtyById, getHealthCenterById } = useCatalog();
 
     const appointments = user ? getAppointmentsByUser(user.id) : [];
 

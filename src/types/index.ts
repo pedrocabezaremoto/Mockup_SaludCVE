@@ -100,7 +100,7 @@ export interface AuthState {
 
 /** Acciones del contexto de autenticación */
 export interface AuthContextType extends AuthState {
-    login: (userId: string) => void;
+    login: (userId: string) => Promise<User | null>;
     logout: () => void;
 }
 
