@@ -10,7 +10,7 @@
 import React from 'react';
 import { Navbar, BackButton } from '../components/layout';
 import { Card, Button } from '../components/ui';
-import { healthCenters } from '../data/mockData';
+import { useCatalog } from '../contexts/CatalogContext';
 import { 
     ChatIcon, 
     InfoIcon, 
@@ -41,6 +41,7 @@ const ContactPage: React.FC<ContactPageProps> = ({
     onNavigate,
     onLogout,
 }) => {
+    const { healthCenters } = useCatalog();
     // Redirigir a WhatsApp Business
     const handleWhatsAppClick = () => {
         window.open(WA_BUSINESS_URL, '_blank');

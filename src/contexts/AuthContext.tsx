@@ -10,6 +10,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { AuthContextType, User } from '../types';
 import { demoUsers } from '../data/mockData';
+import { loginUser } from '../services/api';
 
 // Crear el contexto con valor por defecto
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,12 +31,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
      * Simula el login de un usuario demo
      * @param userId - ID del usuario ('user-maria' o 'user-pablo')
      */
-    const login = (userId: string) => {
-        const foundUser = demoUsers.find(u => u.id === userId);
-        if (foundUser) {
-            setUser(foundUser);
+    const login = async (userId: string): Promise<User | null> => {
+        try {
+            const apiUser = await loginUser(userId);
+            setUser(apiUser);
             setIsAuthenticated(true);
+            return apiUser;
+        } catch {
+            const foundUser = demoUsers.find(u => u.id === userId);
+            if (foundUser) {
+                setUser(foundUser);
+                setIsAuthenticated(true);
+                return foundUser;
+            }
         }
+
+        setUser(null);
+        setIsAuthenticated(false);
+        return null;
     };
 
     /**

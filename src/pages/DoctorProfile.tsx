@@ -9,7 +9,7 @@ import React from 'react';
 import { Navbar, BackButton } from '../components/layout';
 import { Card, Button } from '../components/ui';
 import { Doctor, Specialty, HealthCenter } from '../types';
-import { getSpecialtyById, getHealthCenterById } from '../data/mockData';
+import { useCatalog } from '../contexts/CatalogContext';
 import { 
     DoctorIcon, 
     HospitalIcon, 
@@ -53,6 +53,7 @@ const DoctorProfilePage: React.FC<DoctorProfilePageProps> = ({
     onLogout,
     onBookAppointment,
 }) => {
+    const { getSpecialtyById, getHealthCenterById } = useCatalog();
     const specialty: Specialty | undefined = getSpecialtyById(doctor.especialidadId);
     const center: HealthCenter | undefined = getHealthCenterById(doctor.centroId);
 

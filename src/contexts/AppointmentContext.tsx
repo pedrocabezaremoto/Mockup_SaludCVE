@@ -9,9 +9,10 @@
  * RF-3: Incluye simulación de carga para feedback visual
  */
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AppointmentContextType, Appointment, AppointmentStatus } from '../types';
 import { canAppointmentBeApproved, validateSpecialtyAvailability } from '../data/mockData';
+import { createAppointment as createAppointmentApi, fetchAppointments } from '../services/api';
 
 // Crear el contexto
 const AppointmentContext = createContext<AppointmentContextType | undefined>(undefined);
@@ -27,6 +28,24 @@ interface AppointmentProviderProps {
 export const AppointmentProvider: React.FC<AppointmentProviderProps> = ({ children }) => {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    const normalizeAppointment = (appointment: Appointment): Appointment => ({
+        ...appointment,
+        createdAt: new Date(appointment.createdAt),
+    });
+
+    const loadAppointments = async () => {
+        try {
+            const apiAppointments = await fetchAppointments();
+            setAppointments(apiAppointments.map(normalizeAppointment));
+        } catch {
+            // Mantener datos locales si el backend no está disponible
+        }
+    };
+
+    useEffect(() => {
+        void loadAppointments();
+    }, []);
 
     /**
      * Agrega una nueva cita al sistema
@@ -45,6 +64,21 @@ export const AppointmentProvider: React.FC<AppointmentProviderProps> = ({ childr
         // RF-3: Simular tiempo de carga de red (1.5 - 2.5 segundos)
         await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
 
+        let createdFromApi: Appointment | null = null;
+
+        try {
+            const created = await createAppointmentApi(appointmentData);
+            createdFromApi = normalizeAppointment(created);
+        } catch {
+            // Fallback a lógica local si el backend no está disponible
+        }
+
+        if (createdFromApi) {
+            setAppointments(prev => [...prev, createdFromApi]);
+            setIsLoading(false);
+            return createdFromApi;
+        }
+
         // VALIDACIÓN 1: Verificar si ya tiene cita pendiente en esta especialidad
         const specialtyValidation = validateSpecialtyAvailability(
             appointmentData.usuarioId,
@@ -58,11 +92,11 @@ export const AppointmentProvider: React.FC<AppointmentProviderProps> = ({ childr
                 id: `apt-${Date.now()}`,
                 createdAt: new Date(),
                 estado: AppointmentStatus.RECHAZADA,
-                motivoRechazo: specialtyValidation.message,
-            };
+            motivoRechazo: specialtyValidation.message,
+        };
 
-            setAppointments(prev => [...prev, rejectedAppointment]);
-            setIsLoading(false);
+        setAppointments(prev => [...prev, rejectedAppointment]);
+        setIsLoading(false);
 
             return rejectedAppointment;
         }

@@ -11,6 +11,7 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AppointmentProvider } from './contexts/AppointmentContext';
+import { CatalogProvider } from './contexts/CatalogContext';
 import { Doctor } from './types';
 
 // Páginas
@@ -36,9 +37,11 @@ const AppContent: React.FC = () => {
     const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
 
     // Manejar login de usuario demo
-    const handleLogin = (userId: string) => {
-        login(userId);
-        setCurrentPage('home');
+    const handleLogin = async (userId: string) => {
+        const authenticatedUser = await login(userId);
+        if (authenticatedUser) {
+            setCurrentPage('home');
+        }
     };
 
     // Manejar logout
@@ -182,9 +185,11 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
     return (
         <AuthProvider>
-            <AppointmentProvider>
-                <AppContent />
-            </AppointmentProvider>
+            <CatalogProvider>
+                <AppointmentProvider>
+                    <AppContent />
+                </AppointmentProvider>
+            </CatalogProvider>
         </AuthProvider>
     );
 };
