@@ -1,4 +1,5 @@
 /**
+ * 
  * SaludConecta VE - Pantalla de Login
  * Representa: Módulo de Acceso (Modo Demo)
  * 
@@ -69,7 +70,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginMaria, onLoginPablo }) => 
                                 fullWidth
                                 onClick={onLoginMaria}
                                 leftIcon={<UserIcon size="lg" />}
+                                className="animate-pulse-gentle ring-4 ring-salud-accion/20"
                             >
+
                                 <div className="text-left flex-1 ml-2">
                                     <span className="block font-bold">Simular Paciente: María</span>
                                     <span className="block text-sm opacity-80">

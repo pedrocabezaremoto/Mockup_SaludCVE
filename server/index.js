@@ -13,6 +13,12 @@ import {
 const app = express();
 const db = initDb();
 
+// Forzar UTF-8 en todas las respuestas JSON
+app.use((_req, res, next) => {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    next();
+});
+
 const defaultOrigins = ['http://localhost:5173', 'http://localhost:4173'];
 const allowedOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
