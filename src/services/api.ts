@@ -43,9 +43,29 @@ export const fetchDoctors = (centerId?: string, specialtyId?: string): Promise<D
     return request<Doctor[]>(`/api/doctors${query ? `?${query}` : ''}`);
 };
 
-export const fetchAppointments = (userId?: string): Promise<Appointment[]> => {
-    const query = userId ? `?userId=${encodeURIComponent(userId)}` : '';
-    return request<Appointment[]>(`/api/appointments${query}`);
+export const fetchAppointments = (userId?: string, doctorId?: string): Promise<Appointment[]> => {
+    const params = new URLSearchParams();
+    if (userId) params.append('userId', userId);
+    if (doctorId) params.append('doctorId', doctorId);
+    const query = params.toString();
+    return request<Appointment[]>(`/api/appointments${query ? `?${query}` : ''}`);
+};
+
+export const updateAppointmentStatus = (
+    id: string,
+    estado: string,
+    motivoRechazo?: string
+): Promise<Appointment> => {
+    return request<Appointment>(`/api/appointments/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ estado, motivoRechazo }),
+    });
+};
+
+export const toggleHealthCenterCollapse = (id: string): Promise<HealthCenter> => {
+    return request<HealthCenter>(`/api/health-centers/${id}/toggle-collapse`, {
+        method: 'PUT',
+    });
 };
 
 export const createAppointment = (

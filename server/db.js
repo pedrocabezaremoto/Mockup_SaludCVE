@@ -38,7 +38,9 @@ const createTables = (db) => {
             nombre TEXT NOT NULL,
             cedula TEXT NOT NULL,
             telefono TEXT NOT NULL,
-            tipo TEXT NOT NULL
+            tipo TEXT NOT NULL,
+            rol TEXT NOT NULL DEFAULT 'paciente',
+            doctorId TEXT
         );
         CREATE TABLE IF NOT EXISTS appointments (
             id TEXT PRIMARY KEY,
@@ -74,8 +76,8 @@ const seedIfNeeded = (db) => {
         VALUES (@id, @nombre, @especialidadId, @centroId, @horarioManana, @horarioTarde, @credenciales)
     `);
     const insertUser = db.prepare(`
-        INSERT INTO users (id, nombre, cedula, telefono, tipo)
-        VALUES (@id, @nombre, @cedula, @telefono, @tipo)
+        INSERT INTO users (id, nombre, cedula, telefono, tipo, rol, doctorId)
+        VALUES (@id, @nombre, @cedula, @telefono, @tipo, @rol, @doctorId)
     `);
 
     const insertTransaction = db.transaction(() => {
@@ -107,6 +109,89 @@ const seedIfNeeded = (db) => {
     insertTransaction();
 };
 
+const migrateAndSeedNewUsers = (db) => {
+    // 1. Verificar si existen las columnas rol y doctorId
+    try {
+        db.prepare('SELECT rol, doctorId FROM users LIMIT 1').get();
+    } catch (e) {
+        // Añadir columnas si no existen
+        try {
+            db.exec(`
+                ALTER TABLE users ADD COLUMN rol TEXT NOT NULL DEFAULT 'paciente';
+                ALTER TABLE users ADD COLUMN doctorId TEXT;
+            `);
+            console.log('Base de datos migrada: columnas "rol" y "doctorId" añadidas a la tabla users.');
+        } catch (alterError) {
+            console.error('Error al añadir columnas en la migración:', alterError);
+        }
+    }
+
+    // 2. Insertar los nuevos usuarios si no existen
+    const insertUser = db.prepare(`
+        INSERT OR IGNORE INTO users (id, nombre, cedula, telefono, tipo, rol, doctorId)
+        VALUES (@id, @nombre, @cedula, @telefono, @tipo, @rol, @doctorId)
+    `);
+
+    const usersToSeed = [
+        {
+            id: 'user-maria',
+            nombre: 'María Fernández',
+            cedula: 'V-12.345.678',
+            telefono: '+58 424-1234567',
+            tipo: 'maria',
+            rol: 'paciente',
+            doctorId: null,
+        },
+        {
+            id: 'user-pablo',
+            nombre: 'Pablo Hernández',
+            cedula: 'V-23.456.789',
+            telefono: '+58 412-9876543',
+            tipo: 'pablo',
+            rol: 'paciente',
+            doctorId: null,
+        },
+        {
+            id: 'user-admin',
+            nombre: 'Dr. Francisco Valera (Administrador)',
+            cedula: 'V-9.876.543',
+            telefono: '+58 246-1111111',
+            tipo: 'admin',
+            rol: 'admin',
+            doctorId: null,
+        },
+        {
+            id: 'user-doctor1',
+            nombre: 'Dra. Elena Rodríguez',
+            cedula: 'V-11.222.333',
+            telefono: '+58 424-2222222',
+            tipo: 'doctor',
+            rol: 'doctor',
+            doctorId: 'doc-001',
+        },
+        {
+            id: 'user-doctor2',
+            nombre: 'Dr. Ricardo Tovar',
+            cedula: 'V-10.444.555',
+            telefono: '+58 412-3333333',
+            tipo: 'doctor',
+            rol: 'doctor',
+            doctorId: 'doc-003',
+        },
+    ];
+
+    try {
+        const trans = db.transaction(() => {
+            usersToSeed.forEach((u) => {
+                insertUser.run(u);
+            });
+        });
+        trans();
+    } catch (seedError) {
+        console.error('Error al insertar usuarios adicionales:', seedError);
+    }
+};
+
 export const initDb = () => {
     const dbPath = process.env.DATABASE_URL || DEFAULT_DB_PATH;
     ensureDirectory(dbPath);
@@ -114,6 +199,7 @@ export const initDb = () => {
     db.pragma('journal_mode = WAL');
     createTables(db);
     seedIfNeeded(db);
+    migrateAndSeedNewUsers(db);
     return db;
 };
 
@@ -149,6 +235,8 @@ export const mapUserRow = (row) => ({
     cedula: row.cedula,
     telefono: row.telefono,
     tipo: row.tipo,
+    rol: row.rol || 'paciente',
+    doctorId: row.doctorId || undefined,
 });
 
 export const mapAppointmentRow = (row) => ({

@@ -23,9 +23,11 @@ import BookingWizardPage from './pages/BookingWizard';
 import MyAppointmentsPage from './pages/MyAppointments';
 import ContactPage from './pages/Contact';
 import MyInfoPage from './pages/MyInfo';
+import DoctorDashboardPage from './pages/DoctorDashboard';
+import AdminDashboardPage from './pages/AdminDashboard';
 
 /** Tipos de página disponibles en la aplicación */
-type Page = 'login' | 'home' | 'search' | 'doctor-profile' | 'booking' | 'appointments' | 'contact' | 'my-info';
+type Page = 'login' | 'home' | 'search' | 'doctor-profile' | 'booking' | 'appointments' | 'contact' | 'my-info' | 'doctor-dashboard' | 'admin-dashboard';
 
 /**
  * Componente interno que maneja la navegación
@@ -40,7 +42,13 @@ const AppContent: React.FC = () => {
     const handleLogin = async (userId: string) => {
         const authenticatedUser = await login(userId);
         if (authenticatedUser) {
-            setCurrentPage('home');
+            if (authenticatedUser.rol === 'admin') {
+                setCurrentPage('admin-dashboard');
+            } else if (authenticatedUser.rol === 'doctor') {
+                setCurrentPage('doctor-dashboard');
+            } else {
+                setCurrentPage('home');
+            }
         }
     };
 
@@ -79,8 +87,7 @@ const AppContent: React.FC = () => {
         if (!isAuthenticated && currentPage !== 'login') {
             return (
                 <LoginPage
-                    onLoginMaria={() => handleLogin('user-maria')}
-                    onLoginPablo={() => handleLogin('user-pablo')}
+                    onLogin={handleLogin}
                 />
             );
         }
@@ -89,8 +96,7 @@ const AppContent: React.FC = () => {
             case 'login':
                 return (
                     <LoginPage
-                        onLoginMaria={() => handleLogin('user-maria')}
-                        onLoginPablo={() => handleLogin('user-pablo')}
+                        onLogin={handleLogin}
                     />
                 );
 
@@ -156,6 +162,22 @@ const AppContent: React.FC = () => {
             case 'my-info':
                 return (
                     <MyInfoPage
+                        onNavigate={handleNavigate}
+                        onLogout={handleLogout}
+                    />
+                );
+
+            case 'doctor-dashboard':
+                return (
+                    <DoctorDashboardPage
+                        onNavigate={handleNavigate}
+                        onLogout={handleLogout}
+                    />
+                );
+
+            case 'admin-dashboard':
+                return (
+                    <AdminDashboardPage
                         onNavigate={handleNavigate}
                         onLogout={handleLogout}
                     />

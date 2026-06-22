@@ -54,14 +54,16 @@ export interface Doctor {
     credenciales: string;
 }
 
-/** Representa un usuario (paciente) del sistema */
+/** Representa un usuario del sistema */
 export interface User {
     id: string;
     nombre: string;
     cedula: string;
     telefono: string;
     /** Tipo de usuario para lógica de demo */
-    tipo: 'maria' | 'pablo';
+    tipo: 'maria' | 'pablo' | 'admin' | 'doctor';
+    rol: 'admin' | 'doctor' | 'paciente';
+    doctorId?: string;
 }
 
 /** Representa una cita médica */
@@ -114,4 +116,6 @@ export interface AppointmentState {
 export interface AppointmentContextType extends AppointmentState {
     addAppointment: (appointment: Omit<Appointment, 'id' | 'createdAt'>) => Promise<Appointment>;
     getAppointmentsByUser: (userId: string) => Appointment[];
+    updateAppointmentStatus: (id: string, estado: AppointmentStatus, motivoRechazo?: string) => Promise<Appointment>;
+    refreshAppointments: () => Promise<void>;
 }

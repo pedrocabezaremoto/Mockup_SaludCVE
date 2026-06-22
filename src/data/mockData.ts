@@ -280,14 +280,42 @@ export const demoUsers: User[] = [
         nombre: 'María Fernández',
         cedula: 'V-12.345.678',
         telefono: '+58 424-1234567',
-        tipo: 'maria', // Caso de ÉXITO
+        tipo: 'maria',
+        rol: 'paciente',
     },
     {
         id: 'user-pablo',
         nombre: 'Pablo Hernández',
         cedula: 'V-23.456.789',
         telefono: '+58 412-9876543',
-        tipo: 'pablo', // Caso de RECHAZO
+        tipo: 'pablo',
+        rol: 'paciente',
+    },
+    {
+        id: 'user-admin',
+        nombre: 'Dr. Francisco Valera (Administrador)',
+        cedula: 'V-9.876.543',
+        telefono: '+58 246-1111111',
+        tipo: 'admin',
+        rol: 'admin',
+    },
+    {
+        id: 'user-doctor1',
+        nombre: 'Dra. Elena Rodríguez',
+        cedula: 'V-11.222.333',
+        telefono: '+58 424-2222222',
+        tipo: 'doctor',
+        rol: 'doctor',
+        doctorId: 'doc-001',
+    },
+    {
+        id: 'user-doctor2',
+        nombre: 'Dr. Ricardo Tovar',
+        cedula: 'V-10.444.555',
+        telefono: '+58 412-3333333',
+        tipo: 'doctor',
+        rol: 'doctor',
+        doctorId: 'doc-003',
     },
 ];
 

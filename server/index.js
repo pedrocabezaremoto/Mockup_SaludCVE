@@ -19,7 +19,12 @@ app.use((_req, res, next) => {
     next();
 });
 
-const defaultOrigins = ['http://localhost:5173', 'http://localhost:4173'];
+const defaultOrigins = [
+    'http://localhost:5173', 
+    'http://localhost:5174', 
+    'http://localhost:4173',
+    'http://localhost:4174'
+];
 const allowedOrigins = process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
     : defaultOrigins;
@@ -141,7 +146,7 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 app.get('/api/appointments', (req, res) => {
-    const { userId } = req.query;
+    const { userId, doctorId } = req.query;
     if (userId) {
         const rows = db
             .prepare('SELECT * FROM appointments WHERE usuarioId = ? ORDER BY createdAt DESC')
@@ -149,9 +154,53 @@ app.get('/api/appointments', (req, res) => {
         res.json(rows.map(mapAppointmentRow));
         return;
     }
+    if (doctorId) {
+        const rows = db
+            .prepare('SELECT * FROM appointments WHERE doctorId = ? ORDER BY createdAt DESC')
+            .all(doctorId);
+        res.json(rows.map(mapAppointmentRow));
+        return;
+    }
 
     const rows = db.prepare('SELECT * FROM appointments ORDER BY createdAt DESC').all();
     res.json(rows.map(mapAppointmentRow));
+});
+
+app.put('/api/appointments/:id/status', (req, res) => {
+    const { id } = req.params;
+    const { estado, motivoRechazo } = req.body || {};
+
+    if (!estado) {
+        res.status(400).json({ message: 'El estado es requerido' });
+        return;
+    }
+
+    const appointment = db.prepare('SELECT * FROM appointments WHERE id = ?').get(id);
+    if (!appointment) {
+        res.status(404).json({ message: 'Cita no encontrada' });
+        return;
+    }
+
+    db.prepare('UPDATE appointments SET estado = ?, motivoRechazo = ? WHERE id = ?')
+        .run(estado, motivoRechazo || null, id);
+
+    const updated = db.prepare('SELECT * FROM appointments WHERE id = ?').get(id);
+    res.json(mapAppointmentRow(updated));
+});
+
+app.put('/api/health-centers/:id/toggle-collapse', (req, res) => {
+    const { id } = req.params;
+    const center = db.prepare('SELECT * FROM health_centers WHERE id = ?').get(id);
+    if (!center) {
+        res.status(404).json({ message: 'Centro de salud no encontrado' });
+        return;
+    }
+
+    const newCollapsed = center.colapsado === 1 ? 0 : 1;
+    db.prepare('UPDATE health_centers SET colapsado = ? WHERE id = ?').run(newCollapsed, id);
+
+    const updated = db.prepare('SELECT * FROM health_centers WHERE id = ?').get(id);
+    res.json(mapHealthCenterRow(updated));
 });
 
 app.post('/api/appointments', (req, res) => {

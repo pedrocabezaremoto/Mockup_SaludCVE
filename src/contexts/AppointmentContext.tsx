@@ -12,7 +12,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { AppointmentContextType, Appointment, AppointmentStatus } from '../types';
 import { canAppointmentBeApproved, validateSpecialtyAvailability } from '../data/mockData';
-import { createAppointment as createAppointmentApi, fetchAppointments } from '../services/api';
+import { createAppointment as createAppointmentApi, fetchAppointments, updateAppointmentStatus as updateAppointmentStatusApi } from '../services/api';
 
 // Crear el contexto
 const AppointmentContext = createContext<AppointmentContextType | undefined>(undefined);
@@ -131,9 +131,45 @@ export const AppointmentProvider: React.FC<AppointmentProviderProps> = ({ childr
         return appointments.filter(apt => apt.usuarioId === userId);
     };
 
+    const updateAppointmentStatus = async (
+        id: string,
+        estado: AppointmentStatus,
+        motivoRechazo?: string
+    ): Promise<Appointment> => {
+        setIsLoading(true);
+        try {
+            const updated = await updateAppointmentStatusApi(id, estado, motivoRechazo);
+            const normalized = normalizeAppointment(updated);
+            setAppointments(prev => prev.map(apt => apt.id === id ? normalized : apt));
+            setIsLoading(false);
+            return normalized;
+        } catch {
+            const apt = appointments.find(a => a.id === id);
+            if (apt) {
+                const updated: Appointment = {
+                    ...apt,
+                    estado,
+                    motivoRechazo: motivoRechazo || undefined,
+                };
+                setAppointments(prev => prev.map(a => a.id === id ? updated : a));
+                setIsLoading(false);
+                return updated;
+            }
+            setIsLoading(false);
+            throw new Error('Cita no encontrada');
+        }
+    };
+
     return (
         <AppointmentContext.Provider
-            value={{ appointments, isLoading, addAppointment, getAppointmentsByUser }}
+            value={{ 
+                appointments, 
+                isLoading, 
+                addAppointment, 
+                getAppointmentsByUser,
+                updateAppointmentStatus,
+                refreshAppointments: loadAppointments
+            }}
         >
             {children}
         </AppointmentContext.Provider>
