@@ -64,14 +64,12 @@ const validateSpecialtyAvailability = (appointments) => {
     return { isValid: true };
 };
 
-const canAppointmentBeApproved = (userId) => {
-    if (userId === 'user-maria') {
-        return true;
-    }
-    if (userId === 'user-pablo') {
-        return false;
-    }
-    return true;
+const canAppointmentBeApproved = (doctorId) => {
+    const doctor = db.prepare('SELECT centroId FROM doctors WHERE id = ?').get(doctorId);
+    if (!doctor) return false;
+    const center = db.prepare('SELECT colapsado FROM health_centers WHERE id = ?').get(doctor.centroId);
+    if (!center) return false;
+    return center.colapsado === 0;
 };
 
 app.get('/api/health-centers', (_req, res) => {
@@ -113,11 +111,6 @@ app.get('/api/doctors/:id', (req, res) => {
         return;
     }
     res.json(mapDoctorRow(doctor));
-});
-
-app.get('/api/users', (_req, res) => {
-    const rows = db.prepare('SELECT * FROM users ORDER BY nombre').all();
-    res.json(rows.map(mapUserRow));
 });
 
 app.get('/api/users/:id', (req, res) => {
@@ -225,7 +218,7 @@ app.post('/api/appointments', (req, res) => {
         .all(usuarioId, especialidadId);
 
     const validation = validateSpecialtyAvailability(existingAppointments);
-    const appointmentApproved = validation.isValid && canAppointmentBeApproved(usuarioId);
+    const appointmentApproved = validation.isValid && canAppointmentBeApproved(doctorId);
 
     const createdAt = new Date().toISOString();
     const appointmentId = `apt-${Date.now()}`;

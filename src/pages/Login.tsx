@@ -1,34 +1,19 @@
-/**
- * SaludConecta VE - Pantalla de Acceso Multiusuario
- * Representa: Módulo de Acceso Académico UNERG
- * 
- * Permite simular el inicio de sesión para tres tipos de usuarios:
- * - Administradores (Admin)
- * - Médicos (Doctor)
- * - Pacientes (Paciente)
- */
-
 import React, { useState } from 'react';
 import Logo from '../components/Logo';
 import { Button } from '../components/ui';
-import { 
-    AcademicIcon, 
-    UserIcon, 
-    DoctorIcon, 
-    IdCardIcon, 
-    InfoIcon,
+import {
+    AcademicIcon,
+    UserIcon,
+    DoctorIcon,
+    IdCardIcon,
     ConfirmedIcon,
     RejectedIcon
 } from '../components/icons';
 
 interface LoginPageProps {
-    /** Callback para manejar el inicio de sesión pasándole el userId */
     onLogin: (userId: string) => void;
 }
 
-/**
- * Mapeo de credenciales de demostración para validaciones en el formulario tradicional
- */
 const DEMO_CREDENTIALS = [
     { label: 'Paciente (Éxito)', cedula: 'V-12.345.678', userId: 'user-maria' },
     { label: 'Paciente (Rechazo)', cedula: 'V-23.456.789', userId: 'user-pablo' },
@@ -38,22 +23,20 @@ const DEMO_CREDENTIALS = [
 ];
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
-    const [activeTab, setActiveTab] = useState<'demo' | 'credentials'>('demo');
     const [cedulaInput, setCedulaInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
     const [formError, setFormError] = useState<string | null>(null);
+    const [showQuickAccess, setShowQuickAccess] = useState(false);
 
-    // Manejar envío del formulario tradicional
     const handleCredentialsSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setFormError(null);
 
         if (!cedulaInput.trim()) {
-            setFormError('Por favor ingrese su Cédula o ID de Usuario.');
+            setFormError('Por favor ingrese su Cédula de Identidad o usuario.');
             return;
         }
 
-        // Buscar coincidencia en credenciales simuladas
         const found = DEMO_CREDENTIALS.find(
             cred => cred.cedula.toLowerCase() === cedulaInput.trim().toLowerCase() ||
                     cred.userId.toLowerCase() === cedulaInput.trim().toLowerCase()
@@ -62,22 +45,20 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
         if (found) {
             onLogin(found.userId);
         } else {
-            setFormError('Usuario no registrado para esta demostración. Intente con una cédula válida o use la pestaña "Acceso Rápido".');
+            setFormError('Credenciales no reconocidas. Verifique su cédula e intente nuevamente.');
         }
     };
 
-    // Auto-completar cédula en el formulario
     const fillCredential = (cedula: string) => {
         setCedulaInput(cedula);
-        setPasswordInput('••••••••');
-        setActiveTab('credentials');
+        setPasswordInput('demo1234');
         setFormError(null);
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50/20 to-salud-primario-claro/30 flex flex-col font-sans">
-            {/* Header con identidad visual académica */}
-            <header className="w-full bg-white/70 backdrop-blur-md border-b border-gray-100 py-4 sm:py-6 shadow-sm">
+            {/* Header institucional */}
+            <header className="w-full bg-white/70 backdrop-blur-md border-b border-gray-100 py-4 sm:py-5 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                         <Logo size="md" className="text-salud-primario" />
@@ -85,280 +66,222 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                             <h1 className="text-xl sm:text-2xl font-bold text-salud-primario leading-tight">
                                 SaludConecta VE
                             </h1>
-                            <p className="text-xs text-gray-500 font-medium">
-                                San Juan de los Morros, Estado Guárico
-                            </p>
                         </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-2 bg-salud-primario-claro px-4 py-1.5 rounded-full border border-sky-200">
                         <AcademicIcon size="sm" className="text-salud-primario" />
                         <span className="text-xs font-semibold text-salud-primario">
-                            Área de Salud UNERG • Cohorte 2026
+                            UNERG · AIS · 2026
                         </span>
                     </div>
                 </div>
             </header>
 
-            {/* Contenido Principal */}
+            {/* Contenido principal */}
             <main className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-10 my-4">
                 <div className="w-full max-w-4xl">
-                    {/* Contenedor con efecto de cristal y sombras premium */}
                     <div className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl border border-white overflow-hidden animate-fade-in flex flex-col md:flex-row">
-                        
-                        {/* Panel lateral informativo (Estética UNERG) */}
+
+                        {/* Panel lateral */}
                         <div className="md:w-5/12 bg-gradient-to-br from-salud-primario to-indigo-700 p-8 sm:p-10 text-white flex flex-col justify-between">
                             <div>
-                                <span className="bg-white/20 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">
-                                    Mockup Interactivo
-                                </span>
-                                <h2 className="text-2xl sm:text-3xl font-bold font-display mt-6 mb-4 leading-tight">
-                                    Telemedicina y Citas Médicas
+                                <div className="w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center mb-6">
+                                    <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <h2 className="text-2xl sm:text-3xl font-bold font-display mb-4 leading-tight">
+                                    Sistema de Gestión de Salud Pública
                                 </h2>
-                                <p className="text-white/80 text-sm leading-relaxed mb-6">
-                                    Plataforma unificada para optimizar la atención de salud pública. Diseñado para mitigar el colapso hospitalario y mejorar la experiencia médica en el Estado Guárico.
+                                <p className="text-white/75 text-sm leading-relaxed mb-8">
+                                    Plataforma integrada para la coordinación de citas médicas, telemedicina y administración de centros de salud en el Estado Guárico.
                                 </p>
+
+                                <div className="space-y-3">
+                                    {[
+                                        { icon: <UserIcon size="sm" />, text: 'Solicitud y seguimiento de citas' },
+                                        { icon: <DoctorIcon size="sm" />, text: 'Gestión de agenda médica' },
+                                        { icon: <AcademicIcon size="sm" />, text: 'Supervisión administrativa' },
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex items-center gap-3 text-white/80 text-sm">
+                                            <span className="text-white/50">{item.icon}</span>
+                                            {item.text}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <div className="flex items-start gap-3 bg-white/10 p-3 rounded-2xl border border-white/5">
-                                    <InfoIcon size="md" className="mt-0.5 text-salud-accion" />
-                                    <p className="text-xs text-white/90 leading-normal">
-                                        <strong>Roles Diferenciados:</strong> Explora cómo interactúan Pacientes, Médicos de guardia y los Administradores de salud.
-                                    </p>
-                                </div>
-                                <div className="text-center md:text-left text-xs text-white/50">
-                                    UNERG - Dirección de Tecnología Médica
-                                </div>
+                            <div className="text-xs text-white/40 mt-8">
+                                Universidad Nacional Experimental Rómulo Gallegos<br />
+                                Área de Ingeniería en Sistemas
                             </div>
                         </div>
 
-                        {/* Panel de Login Principal */}
+                        {/* Panel de login */}
                         <div className="md:w-7/12 p-6 sm:p-8 md:p-10 flex flex-col justify-between">
                             <div>
-                                {/* Selector de pestañas */}
-                                <div className="flex bg-slate-100 p-1.5 rounded-2xl mb-8">
-                                    <button
-                                        onClick={() => { setActiveTab('demo'); setFormError(null); }}
-                                        className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-smooth ${
-                                            activeTab === 'demo'
-                                                ? 'bg-white text-salud-primario shadow-sm'
-                                                : 'text-gray-500 hover:text-gray-800'
-                                        }`}
-                                    >
-                                        Acceso Rápido (Demo)
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveTab('credentials')}
-                                        className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-smooth ${
-                                            activeTab === 'credentials'
-                                                ? 'bg-white text-salud-primario shadow-sm'
-                                                : 'text-gray-500 hover:text-gray-800'
-                                        }`}
-                                    >
-                                        Formulario de Acceso
-                                    </button>
+                                <div className="mb-8">
+                                    <h3 className="text-xl font-bold text-gray-800">
+                                        Iniciar Sesión
+                                    </h3>
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        Ingrese su cédula de identidad y contraseña para acceder.
+                                    </p>
                                 </div>
 
-                                {/* Pestaña 1: Acceso Rápido Demo (La mejor experiencia para mostrar) */}
-                                {activeTab === 'demo' && (
-                                    <div className="space-y-6">
-                                        <div className="text-center sm:text-left">
-                                            <h3 className="text-lg font-bold text-gray-800 flex items-center justify-center sm:justify-start gap-2">
-                                                Seleccione un Rol de Demostración
-                                            </h3>
-                                            <p className="text-sm text-gray-500 mt-1">
-                                                Accede directamente con configuraciones de prueba preestablecidas.
-                                            </p>
+                                <form onSubmit={handleCredentialsSubmit} className="space-y-5">
+                                    {formError && (
+                                        <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2.5 text-red-700 text-sm">
+                                            <span className="flex-shrink-0 mt-0.5">⚠</span>
+                                            <span>{formError}</span>
+                                        </div>
+                                    )}
+
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                                <IdCardIcon size="sm" /> Cédula de Identidad
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={cedulaInput}
+                                                onChange={(e) => setCedulaInput(e.target.value)}
+                                                placeholder="Ej: V-12.345.678"
+                                                autoComplete="username"
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-salud-primario/30 focus:border-salud-primario transition-all text-sm font-medium text-gray-800"
+                                            />
                                         </div>
 
-                                        <div className="space-y-4">
-                                            {/* SECCIÓN PACIENTES */}
+                                        <div>
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                                                Contraseña
+                                            </label>
+                                            <input
+                                                type="password"
+                                                value={passwordInput}
+                                                onChange={(e) => setPasswordInput(e.target.value)}
+                                                placeholder="••••••••"
+                                                autoComplete="current-password"
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-salud-primario/30 focus:border-salud-primario transition-all text-sm font-medium text-gray-800"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        variant="primary"
+                                        size="lg"
+                                        fullWidth
+                                        className="mt-6 font-bold py-3 text-sm"
+                                    >
+                                        Entrar al Sistema
+                                    </Button>
+                                </form>
+
+                                {/* Acceso de demostración colapsado */}
+                                <div className="mt-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowQuickAccess(v => !v)}
+                                        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-salud-primario transition-colors font-medium mx-auto"
+                                    >
+                                        <span>{showQuickAccess ? '▲' : '▼'}</span>
+                                        Acceso de demostración
+                                    </button>
+
+                                    {showQuickAccess && (
+                                        <div className="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 animate-fade-in space-y-4">
+                                            {/* Pacientes */}
                                             <div>
-                                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                                                    <UserIcon size="sm" /> 1. Pacientes (Ciudadanos)
-                                                </h4>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                                    <UserIcon size="sm" /> Pacientes
+                                                </p>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                     <button
+                                                        type="button"
                                                         onClick={() => onLogin('user-maria')}
-                                                        className="group p-4 bg-slate-50 hover:bg-sky-50 border border-slate-100 hover:border-sky-200 rounded-2xl text-left transition-all duration-smooth flex items-start gap-3 shadow-sm hover:shadow-md"
+                                                        className="group p-3 bg-white hover:bg-sky-50 border border-slate-100 hover:border-sky-200 rounded-xl text-left transition-all flex items-start gap-2.5 shadow-sm"
                                                     >
-                                                        <ConfirmedIcon className="text-salud-exito mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" size="md" />
+                                                        <ConfirmedIcon className="text-salud-exito mt-0.5 flex-shrink-0" size="sm" />
                                                         <div>
-                                                            <span className="block font-bold text-sm text-gray-800">María Fernández</span>
-                                                            <span className="block text-xs text-salud-primario font-medium">Caso de Éxito</span>
-                                                            <span className="block text-[10px] text-gray-400 mt-1">Cita aprobada de inmediato.</span>
+                                                            <span className="block font-semibold text-xs text-gray-800">María Fernández</span>
+                                                            <span className="block text-[10px] text-gray-400">Cita disponible</span>
                                                         </div>
                                                     </button>
-
                                                     <button
+                                                        type="button"
                                                         onClick={() => onLogin('user-pablo')}
-                                                        className="group p-4 bg-slate-50 hover:bg-amber-50 border border-slate-100 hover:border-amber-200 rounded-2xl text-left transition-all duration-smooth flex items-start gap-3 shadow-sm hover:shadow-md"
+                                                        className="group p-3 bg-white hover:bg-amber-50 border border-slate-100 hover:border-amber-200 rounded-xl text-left transition-all flex items-start gap-2.5 shadow-sm"
                                                     >
-                                                        <RejectedIcon className="text-salud-error mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" size="md" />
+                                                        <RejectedIcon className="text-salud-error mt-0.5 flex-shrink-0" size="sm" />
                                                         <div>
-                                                            <span className="block font-bold text-sm text-gray-800">Pablo Hernández</span>
-                                                            <span className="block text-xs text-amber-600 font-medium">Caso de Colapso</span>
-                                                            <span className="block text-[10px] text-gray-400 mt-1">Simula rechazo por saturación.</span>
+                                                            <span className="block font-semibold text-xs text-gray-800">Pablo Hernández</span>
+                                                            <span className="block text-[10px] text-gray-400">Sin disponibilidad</span>
                                                         </div>
                                                     </button>
                                                 </div>
                                             </div>
 
-                                            {/* SECCIÓN MÉDICOS */}
+                                            {/* Médicos */}
                                             <div>
-                                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                                                    <DoctorIcon size="sm" /> 2. Médicos (Especialistas)
-                                                </h4>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                    <button
-                                                        onClick={() => onLogin('user-doctor1')}
-                                                        className="group p-4 bg-slate-50 hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-2xl text-left transition-all duration-smooth flex items-start gap-3 shadow-sm hover:shadow-md"
-                                                    >
-                                                        <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-sm font-bold flex-shrink-0 group-hover:scale-110 transition-transform">
-                                                            DR
-                                                        </div>
-                                                        <div>
-                                                            <span className="block font-bold text-sm text-gray-800">Dra. Elena Rodríguez</span>
-                                                            <span className="block text-xs text-emerald-600 font-medium">Pediatría - IVSS</span>
-                                                            <span className="block text-[10px] text-gray-400 mt-1">Gestionar citas asignadas.</span>
-                                                        </div>
-                                                    </button>
-
-                                                    <button
-                                                        onClick={() => onLogin('user-doctor2')}
-                                                        className="group p-4 bg-slate-50 hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-2xl text-left transition-all duration-smooth flex items-start gap-3 shadow-sm hover:shadow-md"
-                                                    >
-                                                        <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-sm font-bold flex-shrink-0 group-hover:scale-110 transition-transform">
-                                                            DR
-                                                        </div>
-                                                        <div>
-                                                            <span className="block font-bold text-sm text-gray-800">Dr. Ricardo Tovar</span>
-                                                            <span className="block text-xs text-emerald-600 font-medium">Med. Interna - IVSS</span>
-                                                            <span className="block text-[10px] text-gray-400 mt-1">Ver agenda y cambiar estados.</span>
-                                                        </div>
-                                                    </button>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                                    <DoctorIcon size="sm" /> Médicos
+                                                </p>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                    {[
+                                                        { id: 'user-doctor1', name: 'Dra. Elena Rodríguez', spec: 'Pediatría' },
+                                                        { id: 'user-doctor2', name: 'Dr. Ricardo Tovar', spec: 'Medicina Interna' },
+                                                    ].map(doc => (
+                                                        <button
+                                                            key={doc.id}
+                                                            type="button"
+                                                            onClick={() => onLogin(doc.id)}
+                                                            className="p-3 bg-white hover:bg-emerald-50 border border-slate-100 hover:border-emerald-200 rounded-xl text-left transition-all flex items-center gap-2.5 shadow-sm"
+                                                        >
+                                                            <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 text-[10px] font-bold flex-shrink-0">
+                                                                DR
+                                                            </div>
+                                                            <div>
+                                                                <span className="block font-semibold text-xs text-gray-800">{doc.name}</span>
+                                                                <span className="block text-[10px] text-gray-400">{doc.spec}</span>
+                                                            </div>
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             </div>
 
-                                            {/* SECCIÓN ADMINISTRADOR */}
+                                            {/* Administrador */}
                                             <div>
-                                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                                                    🛡️ 3. Administrador de Salud
-                                                </h4>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                                                    Administrador
+                                                </p>
                                                 <button
+                                                    type="button"
                                                     onClick={() => onLogin('user-admin')}
-                                                    className="w-full group p-4 bg-slate-50 hover:bg-indigo-50 border border-slate-100 hover:border-indigo-200 rounded-2xl text-left transition-all duration-smooth flex items-center gap-4 shadow-sm hover:shadow-md"
+                                                    className="w-full p-3 bg-white hover:bg-indigo-50 border border-slate-100 hover:border-indigo-200 rounded-xl text-left transition-all flex items-center gap-2.5 shadow-sm"
                                                 >
-                                                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-base font-bold flex-shrink-0 group-hover:scale-110 transition-transform">
+                                                    <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 text-[10px] font-bold flex-shrink-0">
                                                         ADM
                                                     </div>
-                                                    <div className="flex-1">
-                                                        <span className="block font-bold text-sm text-gray-800">Dr. Francisco Valera</span>
-                                                        <span className="block text-xs text-indigo-600 font-medium">Administrador del Sistema</span>
-                                                        <span className="block text-[10px] text-gray-400 mt-0.5">Métricas globales, centros y colapsos.</span>
+                                                    <div>
+                                                        <span className="block font-semibold text-xs text-gray-800">Dr. Francisco Valera</span>
+                                                        <span className="block text-[10px] text-gray-400">Administrador del Sistema</span>
                                                     </div>
                                                 </button>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
-
-                                {/* Pestaña 2: Formulario tradicional con soporte simulado */}
-                                {activeTab === 'credentials' && (
-                                    <form onSubmit={handleCredentialsSubmit} className="space-y-5 animate-fade-in">
-                                        <div className="text-center sm:text-left mb-6">
-                                            <h3 className="text-lg font-bold text-gray-800">
-                                                Acceso mediante Credenciales
-                                            </h3>
-                                            <p className="text-sm text-gray-500 mt-1">
-                                                Introduce tu Cédula de Identidad o ID de Demostración.
-                                            </p>
-                                        </div>
-
-                                        {formError && (
-                                            <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2.5 text-red-800 text-xs sm:text-sm animate-shake">
-                                                <span className="font-bold flex-shrink-0">⚠️</span>
-                                                <span>{formError}</span>
-                                            </div>
-                                        )}
-
-                                        <div className="space-y-4">
-                                            {/* Input Cédula */}
-                                            <div>
-                                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                                                    <IdCardIcon size="sm" /> Cédula o Usuario
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    value={cedulaInput}
-                                                    onChange={(e) => setCedulaInput(e.target.value)}
-                                                    placeholder="Ej: V-12.345.678"
-                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-salud-primario/30 focus:border-salud-primario transition-all text-sm font-medium text-gray-800"
-                                                />
-                                            </div>
-
-                                            {/* Input Contraseña (Simulado) */}
-                                            <div>
-                                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                                                    Contraseña (Cualquiera)
-                                                </label>
-                                                <input
-                                                    type="password"
-                                                    value={passwordInput}
-                                                    onChange={(e) => setPasswordInput(e.target.value)}
-                                                    placeholder="••••••••"
-                                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-salud-primario/30 focus:border-salud-primario transition-all text-sm font-medium text-gray-800 animate-fade-in"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Botón de Acceso */}
-                                        <Button
-                                            type="submit"
-                                            variant="primary"
-                                            size="lg"
-                                            fullWidth
-                                            className="mt-6 font-bold py-3 text-sm flex items-center justify-center gap-2"
-                                        >
-                                            Entrar al Sistema
-                                        </Button>
-
-                                        {/* Sugerencias de simulación rápida en el formulario */}
-                                        <div className="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                            <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">
-                                                Cédulas de Prueba Disponibles:
-                                            </span>
-                                            <div className="flex flex-wrap gap-2">
-                                                {DEMO_CREDENTIALS.map((cred) => (
-                                                    <button
-                                                        key={cred.userId}
-                                                        type="button"
-                                                        onClick={() => fillCredential(cred.cedula)}
-                                                        className="text-[10px] bg-white border border-slate-200 hover:border-salud-primario text-gray-600 hover:text-salud-primario px-2.5 py-1.5 rounded-lg transition-colors font-medium"
-                                                    >
-                                                        {cred.label}: {cred.cedula}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </form>
-                                )}
+                                    )}
+                                </div>
                             </div>
 
-                            {/* Nota de pie */}
-                            <div className="mt-8 pt-4 border-t border-slate-100 text-[11px] text-gray-400 text-center leading-normal">
-                                Universidad Rómulo Gallegos (UNERG) • Proyecto Académico 2026. Todos los datos ingresados se simulan de forma local en el navegador y el servidor experimental.
-                            </div>
                         </div>
-
                     </div>
                 </div>
             </main>
 
-            {/* Footer */}
             <footer className="py-4 text-center text-xs text-gray-400 border-t border-gray-100 bg-white/30">
-                &copy; 2026 SaludConecta VE - Sistema Experimental de Gestión de Consultas Sanitarias
+                &copy; 2026 SaludConecta VE — Sistema de Gestión de Consultas Sanitarias
             </footer>
         </div>
     );
